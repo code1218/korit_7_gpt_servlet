@@ -7,10 +7,21 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
+import java.util.Optional;
 
 public class UserDao {
+    private static UserDao userDao = null;
 
-    public void save(User user) {
+    private UserDao() {}
+
+    public static UserDao getInstance() {
+        if (userDao == null) {
+            userDao = new UserDao();
+        }
+        return userDao;
+    }
+
+    public Optional<User> save(User user) {
         Connection con = null;
         PreparedStatement ps = null;
 
@@ -36,6 +47,8 @@ public class UserDao {
         } finally {
             DBConnectionMgr.getInstance().freeConnection(con, ps);
         }
+
+        return Optional.ofNullable(user);
     }
 }
 
