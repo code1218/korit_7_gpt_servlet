@@ -20,11 +20,11 @@ public class UserServlet extends HttpServlet {
 
     public void init(ServletConfig config) throws ServletException {
         List<User> users = new ArrayList<>();
-        users.add(new User("aaa", "1111", "aaaaaa", "aaa@gmail.com"));
-        users.add(new User("bbb", "1111", "bbbbbb", "bbb@gmail.com"));
-        users.add(new User("ccc", "1111", "cccccc", "ccc@gmail.com"));
-        users.add(new User("ddd", "1111", "dddddd", "ddd@gmail.com"));
-        users.add(new User("eee", "1111", "eeeeee", "eee@gmail.com"));
+        users.add(new User(0, "aaa", "1111", "aaaaaa", "aaa@gmail.com"));
+        users.add(new User(0, "bbb", "1111", "bbbbbb", "bbb@gmail.com"));
+        users.add(new User(0, "ccc", "1111", "cccccc", "ccc@gmail.com"));
+        users.add(new User(0, "ddd", "1111", "dddddd", "ddd@gmail.com"));
+        users.add(new User(0, "eee", "1111", "eeeeee", "eee@gmail.com"));
 
         config.getServletContext().setAttribute("users", users);
     }
@@ -59,7 +59,7 @@ public class UserServlet extends HttpServlet {
                     "history.back();" +
                     "</script>");
             return;
-        }
+        } 
         users.add(user);
 
         response.sendRedirect("http://localhost:8080/servlet_study_war/user");
