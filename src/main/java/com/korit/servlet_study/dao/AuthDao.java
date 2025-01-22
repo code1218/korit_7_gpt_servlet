@@ -24,6 +24,48 @@ public class AuthDao {
         return instance;
     }
 
+    public User findUserByUsername(String username) {
+        User foundUser = null;
+        Connection con = null;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+
+        try {
+            con = dbConnectionMgr.getConnection();
+            String sql = """
+                    select
+                        user_id,
+                        username,
+                        password,
+                        name,
+                        email
+                    from
+                        user_tb
+                    where
+                        username = ?
+                    """;
+            ps = con.prepareStatement(sql);
+            ps.setString(1, username);
+            rs = ps.executeQuery();
+            if (rs.next()) {
+                foundUser = User.builder()
+                        .userId(rs.getInt("user_id"))
+                        .username(rs.getString("username"))
+                        .password(rs.getString("password"))
+                        .name(rs.getString("name"))
+                        .email(rs.getString("email"))
+                        .build();
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            dbConnectionMgr.freeConnection(con, ps, rs);
+        }
+
+        return foundUser;
+    }
+
     public User signup(User user) {
         User insertedUser = null;
         Connection con = null;

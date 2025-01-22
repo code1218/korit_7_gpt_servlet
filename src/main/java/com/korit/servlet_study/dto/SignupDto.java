@@ -4,6 +4,7 @@ import com.korit.servlet_study.entity.User;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.mindrot.jbcrypt.BCrypt;
 
 @Data
 @NoArgsConstructor
@@ -17,7 +18,7 @@ public class SignupDto {
     public User toUser() {
         return User.builder()
                 .username(username)
-                .password(password)
+                .password(BCrypt.hashpw(password, BCrypt.gensalt(10)))
                 .name(name)
                 .email(email)
                 .build();
