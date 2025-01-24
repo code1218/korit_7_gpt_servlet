@@ -15,7 +15,6 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.lang.reflect.Method;
 
-@WebFilter("*")
 public class AuthenticationFilter implements Filter {
     private JwtProvider jwtProvider;
     private UserDao userDao;
@@ -31,7 +30,6 @@ public class AuthenticationFilter implements Filter {
         HttpServletResponse response = (HttpServletResponse) servletResponse;
 
         try {
-            System.out.println(isJwtTokenValid(request));
             if(isJwtTokenValid(request)) {
                 String bearerToken = request.getHeader("Authorization");
                 if(bearerToken == null) {
