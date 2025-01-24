@@ -3,6 +3,7 @@ package com.korit.servlet_study.servlet;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.korit.servlet_study.dto.ResponseDto;
 import com.korit.servlet_study.entity.User;
+import com.korit.servlet_study.security.annotation.JwtValid;
 import com.korit.servlet_study.service.UserService;
 
 import javax.servlet.ServletException;
@@ -20,9 +21,8 @@ public class UserRestServlet extends HttpServlet {
         userService = UserService.getInstance();
     }
 
+    @JwtValid
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-
-
         String userIdParam = request.getParameter("userId");
         int userId = Integer.parseInt(userIdParam);
         ResponseDto<?> responseDto = userService.getUser(userId);

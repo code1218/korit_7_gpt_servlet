@@ -31,6 +31,7 @@ public class AuthenticationFilter implements Filter {
         HttpServletResponse response = (HttpServletResponse) servletResponse;
 
         try {
+            System.out.println(isJwtTokenValid(request));
             if(isJwtTokenValid(request)) {
                 String bearerToken = request.getHeader("Authorization");
                 if(bearerToken == null) {
