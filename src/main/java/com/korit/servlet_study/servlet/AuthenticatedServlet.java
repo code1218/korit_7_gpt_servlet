@@ -24,7 +24,7 @@ public class AuthenticatedServlet extends HttpServlet {
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         String bearerToken = req.getHeader("Authorization");
         ObjectMapper objectMapper = new ObjectMapper();
-        ResponseDto responseDto = null;
+        ResponseDto<?> responseDto = null;
 
         if(bearerToken == null) {
             responseDto = ResponseDto.forbidden("검증 할 수 없는 Access Token 입니다.");

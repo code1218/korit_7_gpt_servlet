@@ -13,15 +13,10 @@ import java.io.IOException;
 @WebServlet("/api/user")
 public class UserRestServlet extends HttpServlet {
 
+
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         ObjectMapper objectMapper = new ObjectMapper();
 
-        User user = User.builder()
-                .username("test")
-                .password("1234")
-                .name("테스트")
-                .email("test@gmail.com")
-                .build();
 
         String jsonUser = objectMapper.writeValueAsString(user);
         System.out.println(jsonUser);
