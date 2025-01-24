@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.korit.servlet_study.dao.UserDao;
 import com.korit.servlet_study.dto.ResponseDto;
 import com.korit.servlet_study.entity.User;
+import com.korit.servlet_study.security.annotation.JwtValid;
 import com.korit.servlet_study.security.jwt.JwtProvider;
 import io.jsonwebtoken.Claims;
 
@@ -12,6 +13,7 @@ import javax.servlet.annotation.WebFilter;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.lang.reflect.Method;
 
 @WebFilter("*")
 public class AuthenticationFilter implements Filter {
@@ -28,33 +30,50 @@ public class AuthenticationFilter implements Filter {
         HttpServletRequest request = (HttpServletRequest) servletRequest;
         HttpServletResponse response = (HttpServletResponse) servletResponse;
 
-        String path = request.getServletPath();
-        String method = request.getMethod();
+        try {
+            if(isJwtTokenValid(request)) {
+                String bearerToken = request.getHeader("Authorization");
+                if(bearerToken == null) {
+                    setUnAuthenticatedResponse(response);
+                    return;
+                }
 
-        String bearerToken = request.getHeader("Authorization");
-        if(bearerToken == null) {
-            setUnAuthenticatedResponse(response);
-            return;
-        }
+                Claims claims = jwtProvider.parseToken(bearerToken);
+                if(claims == null) {
+                    setUnAuthenticatedResponse(response);
+                    return;
+                }
 
-        Claims claims = jwtProvider.parseToken(bearerToken);
-        if(claims == null) {
-            setUnAuthenticatedResponse(response);
-            return;
-        }
-
-        int userId = Integer.parseInt(claims.get("userId").toString());
-        User foundUser = userDao.findById(userId);
-        if(foundUser == null) {
-            setUnAuthenticatedResponse(response);
-            return;
+                int userId = Integer.parseInt(claims.get("userId").toString());
+                User foundUser = userDao.findById(userId);
+                if(foundUser == null) {
+                    setUnAuthenticatedResponse(response);
+                    return;
+                }
+            };
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
         }
 
         filterChain.doFilter(servletRequest, servletResponse);
     }
 
-    private boolean isJwtTokenValid(HttpServletRequest request) {
+    private boolean isJwtTokenValid(HttpServletRequest request) throws ClassNotFoundException {
+        String method = request.getMethod();
+        String servletPath = request.getHttpServletMapping().getServletName();
 
+        Class<?> servletClass = Class.forName(servletPath);
+        Method foundMethod = getMappedMethod(servletClass, method);
+        return foundMethod != null;
+    }
+
+    private Method getMappedMethod(Class<?> clazz, String methodName) {
+        for(Method method : clazz.getDeclaredMethods()) {
+            if(method.getName().toLowerCase().endsWith(methodName.toLowerCase()) && method.isAnnotationPresent(JwtValid.class)) {
+                return method;
+            }
+        }
+        return null;
     }
 
     private void setUnAuthenticatedResponse(HttpServletResponse response) throws IOException {
